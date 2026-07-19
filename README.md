@@ -1,58 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SchoolManager — Plateforme SaaS de gestion scolaire
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plateforme tout-en-un pour les etablissements scolaires en Afrique francophone.  
+Gestion des eleves, paiements, notes, bulletins, presences, emploi du temps, messagerie et portail parents.
 
-## About Laravel
+## Prerequis
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP 8.4+**
+- **Composer**
+- **Node.js 18+** et **npm**
+- **SQLite** (par defaut, aucun serveur de base de donnees requis)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Installation
 
 ```bash
-composer require laravel/boost --dev
+# 1. Cloner le projet
+git clone https://github.com/Fallbamba10/ecole.git
+cd ecole
 
-php artisan boost:install
+# 2. Installer les dependances PHP
+composer install
+
+# 3. Installer les dependances front-end
+npm install
+
+# 4. Copier le fichier d'environnement
+cp .env.example .env
+
+# 5. Generer la cle d'application
+php artisan key:generate
+
+# 6. Creer la base de donnees SQLite
+touch database/database.sqlite
+
+# 7. Lancer les migrations
+php artisan migrate
+
+# 8. Charger les donnees de demonstration
+php artisan db:seed --class=DemoSeeder
+
+# 9. Compiler les assets
+npm run build
+
+# 10. Demarrer le serveur
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+L'application est accessible sur **http://localhost:8000**
 
-## Contributing
+## Comptes de demonstration
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Role | Email | Mot de passe |
+|------|-------|--------------|
+| Directeur (admin) | `directeur@institut-excellence.sn` | `password` |
+| Secretaire | `secretaire@institut-excellence.sn` | `password` |
+| Enseignant | `fall@institut-excellence.sn` | `password` |
 
-## Code of Conduct
+> Les donnees de demo incluent : 1 ecole, 6 classes, ~60 eleves, des notes, paiements et presences sur 20 jours.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Fonctionnalites
 
-## Security Vulnerabilities
+- **Gestion des eleves** — inscription, fiches, import CSV
+- **Classes** — creation, affectation, capacite
+- **Paiements** — suivi inscription + mensualites, relances automatiques
+- **Notes & Bulletins** — saisie unitaire ou en masse, generation PDF
+- **Presences** — appel numerique par classe, statistiques
+- **Emploi du temps** — planning hebdomadaire, detection de conflits
+- **Messagerie interne** — entre enseignants, admin et parents
+- **Portail parents** — consultation notes, presences, paiements
+- **SMS parents** — envoi groupe (interface prete, API a configurer)
+- **Statistiques** — tableaux de bord avec graphiques
+- **Multi-tenant** — chaque ecole ne voit que ses propres donnees
+- **Roles** — admin_ecole, enseignant, secretaire, parent, super_admin
+- **Abonnements** — plans Basic / Standard / Premium avec periode d'essai
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Stack technique
 
-## License
+- Laravel 13 (PHP 8.4)
+- Tailwind CSS + Alpine.js
+- Spatie Laravel Permission (gestion des roles)
+- SQLite (dev) / MySQL (production)
+- Vite (build des assets)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Commandes utiles
+
+```bash
+# Lancer en mode developpement (hot reload)
+npm run dev
+# (dans un autre terminal)
+php artisan serve
+
+# Vider le cache
+php artisan cache:clear && php artisan view:clear
+
+# Relancer les migrations (reset complet)
+php artisan migrate:fresh --seed --seeder=DemoSeeder
+```
+
+## Structure des roles
+
+| Role | Acces |
+|------|-------|
+| `admin_ecole` | Tout (parametres, enseignants, parents, stats, exports) |
+| `enseignant` | Notes, presences, classes assignees, annonces |
+| `secretaire` | Paiements, eleves (consultation), frais scolaires |
+| `parent` | Portail parent uniquement (notes, presences, paiements de ses enfants) |
+| `super_admin` | Administration SaaS globale (toutes les ecoles) |
+
+## Licence
+
+Projet prive — tous droits reserves.

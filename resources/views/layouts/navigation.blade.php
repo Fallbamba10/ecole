@@ -11,53 +11,63 @@
 
                 <!-- Navigation Links (principaux) -->
                 <div class="hidden lg:flex items-center ml-8 space-x-1">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        Dashboard
-                    </x-nav-link>
-                    <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
-                        Élèves
-                    </x-nav-link>
-                    <x-nav-link :href="route('classrooms.index')" :active="request()->routeIs('classrooms.*')">
-                        Classes
-                    </x-nav-link>
-                    @unless(auth()->user()->hasRole('enseignant'))
-                    <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
-                        Paiements
-                    </x-nav-link>
-                    @endunless
-                    <x-nav-link :href="route('grades.index')" :active="request()->routeIs('grades.*')">
-                        Notes
-                    </x-nav-link>
-                    <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
-                        Présences
-                    </x-nav-link>
+                    @if(auth()->user()->hasRole('parent'))
+                        <x-nav-link :href="route('parent.index')" :active="request()->routeIs('parent.*')">
+                            Mes enfants
+                        </x-nav-link>
+                        <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                            Messagerie
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            Tableau de bord
+                        </x-nav-link>
+                        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
+                            Élèves
+                        </x-nav-link>
+                        <x-nav-link :href="route('classrooms.index')" :active="request()->routeIs('classrooms.*')">
+                            Classes
+                        </x-nav-link>
+                        @unless(auth()->user()->hasRole('enseignant'))
+                        <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
+                            Paiements
+                        </x-nav-link>
+                        @endunless
+                        <x-nav-link :href="route('grades.index')" :active="request()->routeIs('grades.*')">
+                            Notes
+                        </x-nav-link>
+                        <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
+                            Présences
+                        </x-nav-link>
 
-                    <!-- Menu "Plus" -->
-                    <div class="relative" @click.away="moreMenu = false">
-                        <button @click="moreMenu = !moreMenu" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
-                            Plus
-                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                        <div x-show="moreMenu" x-transition class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
-                            <a href="{{ route('subjects.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Matières</a>
-                            <a href="{{ route('timetable.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Emploi du temps</a>
-                            <a href="{{ route('announcements.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Annonces</a>
-                            @unless(auth()->user()->hasRole('enseignant'))
-                                <a href="{{ route('fees.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Frais scolaires</a>
-                            @endunless
-                            @if(auth()->user()->hasRole('admin_ecole') || auth()->user()->hasRole('super_admin'))
-                                <div class="border-t border-gray-100 my-1"></div>
-                                <a href="{{ route('statistics.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Statistiques</a>
-                                <a href="{{ route('teachers.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Enseignants</a>
-                                <a href="{{ route('school-years.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Années scolaires</a>
-                                <a href="{{ route('sms.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">SMS Parents</a>
-                            @endif
-                            @if(auth()->user()->hasRole('super_admin'))
-                                <div class="border-t border-gray-100 my-1"></div>
-                                <a href="{{ route('super-admin.dashboard') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Admin SaaS</a>
-                            @endif
+                        <!-- Menu "Plus" -->
+                        <div class="relative" @click.away="moreMenu = false">
+                            <button @click="moreMenu = !moreMenu" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
+                                Plus
+                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="moreMenu" x-transition class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                                <a href="{{ route('subjects.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Matières</a>
+                                <a href="{{ route('timetable.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Emploi du temps</a>
+                                <a href="{{ route('announcements.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Annonces</a>
+                                @unless(auth()->user()->hasRole('enseignant'))
+                                    <a href="{{ route('fees.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Frais scolaires</a>
+                                @endunless
+                                @if(auth()->user()->hasRole('admin_ecole') || auth()->user()->hasRole('super_admin'))
+                                    <div class="border-t border-gray-100 my-1"></div>
+                                    <a href="{{ route('statistics.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Statistiques</a>
+                                    <a href="{{ route('teachers.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Enseignants</a>
+                                    <a href="{{ route('parents.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Comptes Parents</a>
+                                    <a href="{{ route('school-years.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Années scolaires</a>
+                                    <a href="{{ route('sms.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">SMS Parents</a>
+                                @endif
+                                @if(auth()->user()->hasRole('super_admin'))
+                                    <div class="border-t border-gray-100 my-1"></div>
+                                    <a href="{{ route('super-admin.dashboard') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Admin SaaS</a>
+                                @endif
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -120,9 +130,11 @@
                     </x-slot>
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">Mon profil</x-dropdown-link>
-                        <x-dropdown-link :href="route('school.settings')">Paramètres école</x-dropdown-link>
-                        <x-dropdown-link :href="route('subscription.index')">Abonnement</x-dropdown-link>
-                        <x-dropdown-link :href="route('export.students')">Exports</x-dropdown-link>
+                        @unless(auth()->user()->hasRole('parent'))
+                            <x-dropdown-link :href="route('school.settings')">Paramètres école</x-dropdown-link>
+                            <x-dropdown-link :href="route('subscription.index')">Abonnement</x-dropdown-link>
+                            <x-dropdown-link :href="route('export.students')">Exportations</x-dropdown-link>
+                        @endunless
                         <div class="border-t border-gray-100 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -149,33 +161,44 @@
     <!-- Menu mobile -->
     <div :class="{'block': open, 'hidden': !open}" class="hidden lg:hidden border-t border-gray-100">
         <div class="py-3 space-y-1 px-4">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Dashboard</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">Élèves</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('classrooms.index')" :active="request()->routeIs('classrooms.*')">Classes</x-responsive-nav-link>
-            @unless(auth()->user()->hasRole('enseignant'))
-                <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">Paiements</x-responsive-nav-link>
-            @endunless
-            <x-responsive-nav-link :href="route('grades.index')" :active="request()->routeIs('grades.*')">Notes</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">Présences</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.*')">Matières</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('timetable.index')" :active="request()->routeIs('timetable.*')">Emploi du temps</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')">Annonces</x-responsive-nav-link>
-            @unless(auth()->user()->hasRole('enseignant'))
-                <x-responsive-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')">Frais scolaires</x-responsive-nav-link>
-            @endunless
-            <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
-                Messages
-                @if($unreadMessagesCount > 0)
-                    <span class="ml-1 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full">{{ $unreadMessagesCount }}</span>
+            @if(auth()->user()->hasRole('parent'))
+                <x-responsive-nav-link :href="route('parent.index')" :active="request()->routeIs('parent.*')">Mes enfants</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                    Messagerie
+                    @if($unreadMessagesCount > 0)
+                        <span class="ml-1 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full">{{ $unreadMessagesCount }}</span>
+                    @endif
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">Notifications</x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Tableau de bord</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">Élèves</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('classrooms.index')" :active="request()->routeIs('classrooms.*')">Classes</x-responsive-nav-link>
+                @unless(auth()->user()->hasRole('enseignant'))
+                    <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">Paiements</x-responsive-nav-link>
+                @endunless
+                <x-responsive-nav-link :href="route('grades.index')" :active="request()->routeIs('grades.*')">Notes</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">Présences</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.*')">Matières</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('timetable.index')" :active="request()->routeIs('timetable.*')">Emploi du temps</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')">Annonces</x-responsive-nav-link>
+                @unless(auth()->user()->hasRole('enseignant'))
+                    <x-responsive-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')">Frais scolaires</x-responsive-nav-link>
+                @endunless
+                <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                    Messagerie
+                    @if($unreadMessagesCount > 0)
+                        <span class="ml-1 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full">{{ $unreadMessagesCount }}</span>
+                    @endif
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">Notifications</x-responsive-nav-link>
+                @if(auth()->user()->hasRole('admin_ecole') || auth()->user()->hasRole('super_admin'))
+                    <div class="border-t border-gray-100 my-2"></div>
+                    <x-responsive-nav-link :href="route('statistics.index')" :active="request()->routeIs('statistics.*')">Statistiques</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.*')">Enseignants</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('school-years.index')" :active="request()->routeIs('school-years.*')">Années scolaires</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('sms.index')" :active="request()->routeIs('sms.*')">SMS Parents</x-responsive-nav-link>
                 @endif
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">Notifications</x-responsive-nav-link>
-            @if(auth()->user()->hasRole('admin_ecole') || auth()->user()->hasRole('super_admin'))
-                <div class="border-t border-gray-100 my-2"></div>
-                <x-responsive-nav-link :href="route('statistics.index')" :active="request()->routeIs('statistics.*')">Statistiques</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.*')">Enseignants</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('school-years.index')" :active="request()->routeIs('school-years.*')">Années scolaires</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('sms.index')" :active="request()->routeIs('sms.*')">SMS Parents</x-responsive-nav-link>
             @endif
         </div>
 
@@ -184,7 +207,11 @@
             <div class="text-xs text-gray-500">{{ Auth::user()->email }}</div>
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">Mon profil</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('school.settings')">Paramètres</x-responsive-nav-link>
+                @unless(auth()->user()->hasRole('parent'))
+                    <x-responsive-nav-link :href="route('school.settings')">Paramètres école</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('subscription.index')">Abonnement</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('export.students')">Exportations</x-responsive-nav-link>
+                @endunless
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">

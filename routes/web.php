@@ -23,7 +23,7 @@ Route::get('/', function () {
 
 // Inscription école (self-service)
 Route::get('/register/school', [App\Http\Controllers\SchoolRegistrationController::class, 'create'])->name('register.school');
-Route::post('/register/school', [App\Http\Controllers\SchoolRegistrationController::class, 'store'])->name('register.school.store');
+Route::post('/register/school', [App\Http\Controllers\SchoolRegistrationController::class, 'store'])->middleware('throttle:3,1')->name('register.school.store');
 
 // Pages légales
 Route::get('/cgu', fn() => view('pages.cgu'))->name('pages.cgu');
@@ -112,7 +112,19 @@ Route::middleware(['auth', 'subscription'])->group(function () {
 
     // Recherche globale
     Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('search');
+
+    // Gestion comptes parents (admin seulement)
+    Route::middleware(['role:admin_ecole|super_admin'])->group(function () {
+        Route::get('/parents', [App\Http\Controllers\ParentAccountController::class, 'index'])->name('parents.index');
+        Route::get('/parents/create', [App\Http\Controllers\ParentAccountController::class, 'create'])->name('parents.create');
+        Route::post('/parents', [App\Http\Controllers\ParentAccountController::class, 'store'])->name('parents.store');
+        Route::delete('/parents/{parent}', [App\Http\Controllers\ParentAccountController::class, 'destroy'])->name('parents.destroy');
+    });
 });
+
+// Inscription parent via lien d'invitation (public, rate limited)
+Route::get('/inscription-parent/{token}', [App\Http\Controllers\ParentAccountController::class, 'showRegistrationForm'])->name('parent.register');
+Route::post('/inscription-parent/{token}', [App\Http\Controllers\ParentAccountController::class, 'register'])->middleware('throttle:5,1')->name('parent.register.store');
 
 // Super Admin routes
 Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {

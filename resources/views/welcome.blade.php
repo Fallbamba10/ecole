@@ -9,6 +9,7 @@
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        [x-cloak] { display: none !important; }
         body { font-family: 'Inter', sans-serif; }
         .gradient-text { background: linear-gradient(135deg, #1e40af, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .hero-gradient { background: linear-gradient(135deg, #eff6ff 0%, #ede9fe 50%, #fdf2f8 100%); }
@@ -23,12 +24,14 @@
         .delay-2 { animation-delay: 0.2s; }
         .delay-3 { animation-delay: 0.3s; }
         .blob { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+        .animate-fade-up { animation: fadeUp 0.6s ease-out forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-white text-gray-800 antialiased overflow-x-hidden">
 
     <!-- Navigation -->
-    <nav class="bg-white/80 backdrop-blur-lg shadow-sm fixed w-full z-50 border-b border-gray-100">
+    <nav x-data="{ mobileMenu: false }" class="bg-white/80 backdrop-blur-lg shadow-sm fixed w-full z-50 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center">
@@ -41,17 +44,33 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:shadow-lg transition">Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:shadow-lg transition">Tableau de bord</a>
                     @else
                         <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-blue-600 transition font-medium">Connexion</a>
                         @if(Route::has('register.school'))
-                            <a href="{{ route('register.school') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:scale-105 transition-all">
+                            <a href="{{ route('register.school') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-5 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:scale-105 transition-all">
                                 Essai gratuit
                             </a>
                         @endif
                     @endauth
+                    <!-- Mobile hamburger -->
+                    <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition">
+                        <svg x-show="!mobileMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg x-show="mobileMenu" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
             </div>
+        </div>
+        <!-- Mobile menu -->
+        <div x-show="mobileMenu" x-transition x-cloak class="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-2">
+            <a href="#features" @click="mobileMenu = false" class="block py-2 text-sm text-gray-600 hover:text-blue-600 font-medium">Fonctionnalités</a>
+            <a href="#pricing" @click="mobileMenu = false" class="block py-2 text-sm text-gray-600 hover:text-blue-600 font-medium">Tarifs</a>
+            <a href="#testimonials" @click="mobileMenu = false" class="block py-2 text-sm text-gray-600 hover:text-blue-600 font-medium">Témoignages</a>
+            @guest
+                <div class="border-t border-gray-100 pt-3 mt-3">
+                    <a href="{{ route('login') }}" class="block py-2 text-sm text-gray-600 hover:text-blue-600 font-medium">Connexion</a>
+                </div>
+            @endguest
         </div>
     </nav>
 
@@ -157,97 +176,100 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Fonctionnalités</span>
-                <h2 class="mt-3 text-3xl md:text-4xl font-extrabold text-gray-900">Tout ce dont votre école a besoin</h2>
-                <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Une plateforme complète et intuitive pour gérer tous les aspects de votre établissement</p>
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Tout-en-un, <span class="gradient-text">simplement</span></h2>
+                <p class="mt-3 text-gray-500 max-w-lg mx-auto">Une seule plateforme pour gérer votre établissement de A à Z.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="p-8 bg-white border border-gray-100 rounded-2xl card-hover group">
-                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-100 transition">
-                        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-animate-card style="animation-delay: 0ms">
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Gestion des élèves</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Inscriptions, fiches complètes, photos, répartition par classe. Import CSV en masse.</p>
+                    <h3 class="font-semibold text-gray-900 text-sm">Élèves</h3>
+                    <p class="text-xs text-gray-400 mt-1">Inscriptions, fiches, import CSV</p>
                 </div>
 
-                <div class="p-8 bg-white border border-gray-100 rounded-2xl card-hover group">
-                    <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-green-100 transition">
-                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-green-200 hover:bg-green-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Paiements & Finances</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Suivi des paiements, rappels auto, reçus PDF. Orange Money, Wave, espèces.</p>
+                    <h3 class="font-semibold text-gray-900 text-sm">Paiements</h3>
+                    <p class="text-xs text-gray-400 mt-1">Wave, OM, rappels auto</p>
                 </div>
 
-                <div class="p-8 bg-white border border-gray-100 rounded-2xl card-hover group">
-                    <div class="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-purple-100 transition">
-                        <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                        </svg>
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Notes & Bulletins</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Saisie des notes, moyennes automatiques, classement, bulletins PDF professionnels.</p>
+                    <h3 class="font-semibold text-gray-900 text-sm">Notes & Bulletins</h3>
+                    <p class="text-xs text-gray-400 mt-1">Saisie en masse, PDF auto</p>
                 </div>
 
-                <div class="p-8 bg-white border border-gray-100 rounded-2xl card-hover group">
-                    <div class="w-14 h-14 bg-yellow-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-yellow-100 transition">
-                        <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Présences & Absences</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Appel quotidien, historique complet, SMS automatiques aux parents en cas d'absence.</p>
+                    <h3 class="font-semibold text-gray-900 text-sm">Présences</h3>
+                    <p class="text-xs text-gray-400 mt-1">Appel digital, alertes SMS</p>
                 </div>
 
-                <div class="p-8 bg-white border border-gray-100 rounded-2xl card-hover group">
-                    <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-red-100 transition">
-                        <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-rose-200 hover:bg-rose-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Emploi du temps</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Planning visuel par classe, détection des conflits, salles et enseignants.</p>
+                    <h3 class="font-semibold text-gray-900 text-sm">Emploi du temps</h3>
+                    <p class="text-xs text-gray-400 mt-1">Planning, conflits auto</p>
                 </div>
 
-                <div class="p-8 bg-white border border-gray-100 rounded-2xl card-hover group">
-                    <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-indigo-100 transition">
-                        <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">SMS & Communication</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Envoi de SMS aux parents, annonces, notifications en temps réel.</p>
+                    <h3 class="font-semibold text-gray-900 text-sm">Messagerie</h3>
+                    <p class="text-xs text-gray-400 mt-1">Interne + SMS groupés</p>
+                </div>
+
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-teal-200 hover:bg-teal-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-sm">Portail Parents</h3>
+                    <p class="text-xs text-gray-400 mt-1">Suivi notes & paiements</p>
+                </div>
+
+                <div class="group p-5 rounded-2xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50/50 transition-all duration-200 cursor-default">
+                    <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-sm">Statistiques</h3>
+                    <p class="text-xs text-gray-400 mt-1">Graphiques, exports PDF</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Stats Band -->
-    <section class="py-16 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 relative overflow-hidden">
+    <section class="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 relative overflow-hidden" data-stats-counter>
         <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div>
-                    <div class="text-4xl md:text-5xl font-extrabold text-white">500+</div>
+                <div class="group">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white transition-transform group-hover:scale-110" data-count="500" data-suffix="+">0+</div>
                     <div class="mt-2 text-blue-100 font-medium">Écoles inscrites</div>
                 </div>
-                <div>
-                    <div class="text-4xl md:text-5xl font-extrabold text-white">50K+</div>
+                <div class="group">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white transition-transform group-hover:scale-110" data-count="50000" data-suffix="+">0+</div>
                     <div class="mt-2 text-blue-100 font-medium">Élèves gérés</div>
                 </div>
-                <div>
-                    <div class="text-4xl md:text-5xl font-extrabold text-white">99.9%</div>
+                <div class="group">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white transition-transform group-hover:scale-110" data-count="99.9" data-suffix="%">0%</div>
                     <div class="mt-2 text-blue-100 font-medium">Disponibilité</div>
                 </div>
-                <div>
-                    <div class="text-4xl md:text-5xl font-extrabold text-white">24/7</div>
+                <div class="group">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white transition-transform group-hover:scale-110">24/7</div>
                     <div class="mt-2 text-blue-100 font-medium">Support client</div>
                 </div>
             </div>
@@ -298,7 +320,7 @@
                 </div>
 
                 <!-- Plan Standard -->
-                <div class="bg-white rounded-3xl shadow-xl border-2 border-blue-600 p-8 relative scale-105 card-hover">
+                <div class="bg-white rounded-3xl shadow-xl border-2 border-blue-600 p-8 relative md:scale-105 card-hover">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
                         Populaire
                     </div>
@@ -491,5 +513,56 @@
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animated counter on stats section
+            const statsSection = document.querySelector('[data-stats-counter]');
+            if (statsSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateCounters();
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.3 });
+                observer.observe(statsSection);
+            }
+
+            function animateCounters() {
+                document.querySelectorAll('[data-count]').forEach(el => {
+                    const target = parseFloat(el.dataset.count);
+                    const suffix = el.dataset.suffix || '';
+                    const isFloat = target % 1 !== 0;
+                    const duration = 1800;
+                    const startTime = performance.now();
+
+                    function step(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const current = target * eased;
+                        el.textContent = (isFloat ? current.toFixed(1) : Math.floor(current).toLocaleString('fr-FR')) + suffix;
+                        if (progress < 1) requestAnimationFrame(step);
+                    }
+                    requestAnimationFrame(step);
+                });
+            }
+
+            // Fade-up animation on features section
+            const featureCards = document.querySelectorAll('[data-animate-card]');
+            if (featureCards.length) {
+                const cardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-fade-up');
+                            cardObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                featureCards.forEach(card => cardObserver.observe(card));
+            }
+        });
+    </script>
 </body>
 </html>

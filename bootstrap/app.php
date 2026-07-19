@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetCurrentSchool::class,
             \App\Http\Middleware\SecretaireRestriction::class,
             \App\Http\Middleware\EnseignantRestriction::class,
+            \App\Http\Middleware\ParentRestriction::class,
         ]);
 
         $middleware->api(append: [

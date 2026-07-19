@@ -9,12 +9,12 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email -->
+        <!-- Email ou Téléphone -->
         <div class="mb-5">
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Adresse email</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Email ou téléphone</label>
+            <input id="email" type="text" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
                 class="block w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
-                placeholder="votre@email.sn">
+                placeholder="votre@email.sn ou 77 123 45 67">
             <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
         </div>
 

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Payment;
 use App\Notifications\PaymentOverdueNotification;
+use App\Services\ParentNotifier;
 use Illuminate\Console\Command;
 
 class SendPaymentReminders extends Command
@@ -23,10 +24,14 @@ class SendPaymentReminders extends Command
             $payment->update(['status' => 'en_retard']);
 
             if ($payment->student && $payment->student->school) {
+                $notification = new PaymentOverdueNotification($payment);
+
                 $admins = $payment->student->school->users()->role('admin_ecole')->get();
                 foreach ($admins as $admin) {
-                    $admin->notify(new PaymentOverdueNotification($payment));
+                    $admin->notify($notification);
                 }
+
+                ParentNotifier::notify($payment->student, $notification);
             }
 
             $updated++;

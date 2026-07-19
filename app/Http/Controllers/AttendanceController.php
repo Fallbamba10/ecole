@@ -7,6 +7,7 @@ use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\StudentAbsentNotification;
+use App\Services\ParentNotifier;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
@@ -71,13 +72,17 @@ class AttendanceController extends Controller
 
             if ($status === 'absent') {
                 $student = Student::find($studentId);
+                $notification = new StudentAbsentNotification($student, $request->date);
+
                 $admin = User::where('school_id', $classroom->school_id)
                     ->role('admin_ecole')
                     ->first();
 
                 if ($admin) {
-                    $admin->notify(new StudentAbsentNotification($student, $request->date));
+                    $admin->notify($notification);
                 }
+
+                ParentNotifier::notify($student, $notification);
             }
         }
 

@@ -14,10 +14,14 @@ class ParentPortalController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $students = Student::where('parent_phone', $user->phone)
-            ->orWhere('parent_email', $user->email)
-            ->with('classroom')
-            ->get();
+        $students = Student::where(function ($q) use ($user) {
+            if ($user->phone) {
+                $q->where('parent_phone', $user->phone);
+            }
+            if ($user->email) {
+                $q->orWhere('parent_email', $user->email);
+            }
+        })->with('classroom')->get();
 
         $studentIds = $students->pluck('id');
 

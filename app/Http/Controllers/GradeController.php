@@ -6,6 +6,8 @@ use App\Models\Classroom;
 use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Notifications\NewGradeNotification;
+use App\Services\ParentNotifier;
 use Illuminate\Http\Request;
 
 class GradeController extends Controller
@@ -58,7 +60,10 @@ class GradeController extends Controller
             'comment' => 'nullable|string|max:255',
         ]);
 
-        Grade::create($validated);
+        $grade = Grade::create($validated);
+        $grade->load(['student', 'subject']);
+
+        ParentNotifier::notify($grade->student, new NewGradeNotification($grade));
 
         return redirect()->route('grades.index', ['classroom_id' => $request->classroom_id, 'period' => $validated['period']])
             ->with('success', 'Note enregistrée.');
@@ -108,7 +113,7 @@ class GradeController extends Controller
                 continue;
             }
 
-            Grade::updateOrCreate(
+            $grade = Grade::updateOrCreate(
                 [
                     'student_id' => $gradeData['student_id'],
                     'subject_id' => $request->subject_id,
@@ -121,6 +126,12 @@ class GradeController extends Controller
                     'comment' => $gradeData['comment'] ?? null,
                 ]
             );
+
+            if ($grade->wasRecentlyCreated) {
+                $grade->load(['student', 'subject']);
+                ParentNotifier::notify($grade->student, new NewGradeNotification($grade));
+            }
+
             $count++;
         }
 
